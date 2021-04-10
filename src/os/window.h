@@ -1,5 +1,6 @@
 #ifndef _OS_WINDOW_H
 #define _OS_WINDOW_H
+#include <string>
 
 namespace os
 {
@@ -8,9 +9,13 @@ namespace os
    public:
       typedef void* NativeHandle;
 
-      void setVisible(bool visible);
+      virtual void setTitle(const std::string& title) = 0;
+      virtual void setVisible(bool visible) = 0;
 
-      NativeHandle handle();
+      virtual void captureMouse() = 0;
+      virtual void releaseMouse() = 0;
+
+      virtual NativeHandle handle() = 0;
    };
 } // namespace os
 
