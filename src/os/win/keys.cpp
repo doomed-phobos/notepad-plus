@@ -302,4 +302,29 @@ namespace os
       else
          return false;
    }
+
+   bool win32vk_is_pressed(int vk)
+   {
+      return GetKeyState(vk) & 0x8000 ? true : false;
+   }
+
+   KeyModifiers get_modifiers_from_win32_message()
+   {
+      int modifiers = kKeyNoneModifier;
+      if(win32vk_is_pressed(VK_LSHIFT) ||
+         win32vk_is_pressed(VK_RSHIFT))
+         modifiers |= kKeyShiftModifier;
+      if(win32vk_is_pressed(VK_LCONTROL) ||
+         win32vk_is_pressed(VK_RCONTROL))
+         modifiers |= kKeyCtrlModifier;
+      if(win32vk_is_pressed(VK_LMENU) ||
+         win32vk_is_pressed(VK_RMENU))
+         modifiers |= kKeyAltModifier;
+      if(win32vk_is_pressed(VK_SPACE))
+         modifiers |= kKeySpaceModifier;
+      if(win32vk_is_pressed(VK_LWIN) ||
+         win32vk_is_pressed(VK_RWIN))
+         modifiers |= kKeyWinModifier;
+      return (KeyModifiers)modifiers;
+   }
 } // namespace os

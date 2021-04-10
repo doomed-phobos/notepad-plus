@@ -7,6 +7,7 @@ namespace os
    bool win_is_key_pressed(KeyCode keycode);
    int keycode_to_win32vk(KeyCode keycode);
    KeyCode win32vk_to_keycode(int vk);
+   KeyModifiers get_modifiers_from_win32_message();
 } // namespace os
 
 #endif
