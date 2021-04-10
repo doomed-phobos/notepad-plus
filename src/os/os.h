@@ -2,6 +2,10 @@
 #define _OS_OS_H
 
 #include "system.h"
+#include "window.h"
+#include "event_queue.h"
 #include "native_dialogs.h"
+
+#include "utils/slot.h"
 
 #endif
