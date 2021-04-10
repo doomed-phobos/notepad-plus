@@ -1,6 +1,7 @@
 #ifndef _OS_NATIVE_DIALOGS_H
 #define _OS_NATIVE_DIALOGS_H
 #include <string>
+#include <memory>
 
 namespace os
 {
@@ -9,15 +10,20 @@ namespace os
    class ToolTipDialog
    {
    public:
-      virtual void setText(const std::string& text) = 0;
+      virtual ~ToolTipDialog() {}
+
       virtual bool show(Window* parent) = 0;
-      virtual void dispose() = 0;
+      virtual void close() = 0;
+      
+      virtual bool isVisible() = 0;
+
+      virtual void setText(const std::string& text) = 0;
    };
 
    class NativeDialogs
    {
    public:
-      ToolTipDialog* createToolTip();
+      std::unique_ptr<ToolTipDialog> createToolTip();
    };
 } // namespace os
 
