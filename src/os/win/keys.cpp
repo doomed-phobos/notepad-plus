@@ -1,7 +1,5 @@
 #include "keys.h"
 
-#include <windows.h>
-
 namespace os
 {
    KeyCode win32vk_to_keycode(int vk)

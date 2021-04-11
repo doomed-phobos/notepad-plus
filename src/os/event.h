@@ -2,6 +2,7 @@
 #define _OS_EVENT_H
 #include "keys.h"
 #include "gfx/point.h"
+#include "utils/paths.h"
 
 namespace os
 {
@@ -12,11 +13,17 @@ namespace os
       enum Type {
          None_Type,
          Close_Type,
+         Resize_Type,
+         DropFiles_Type,
          MouseUp_Type,
          MouseDown_Type,
+         MouseDoubleClick_Type,
          MouseMove_Type,
          MouseEnter_Type,
-         MouseLeave_Type
+         MouseLeave_Type,
+         MouseWheel_Type,
+         KeyDown_Type,
+         KeyUp_Type
       };
 
       enum MouseButton {
@@ -27,14 +34,25 @@ namespace os
       };
 
       Event() : type(None_Type),
+                window(nullptr),
                 mouseButton(None_MouseButton),
-                keyModifiers(kKeyUninitializedModifier) {}
+                wheelDelta(0.0),
+                keyModifiers(kKeyUninitializedModifier),
+                keyCode(kKeyNil),
+                deadKey(false),
+                unicodeChr(0) {}
+
 
       Type type;
-      MouseButton mouseButton;
       Window* window;
-      KeyModifiers keyModifiers;
+      utils::paths files;
+      MouseButton mouseButton;
       gfx::PointI mousePosition;
+      double wheelDelta;
+      KeyModifiers keyModifiers;
+      KeyCode keyCode;
+      bool deadKey;
+      wchar_t unicodeChr;
    };
 } // namespace os
 

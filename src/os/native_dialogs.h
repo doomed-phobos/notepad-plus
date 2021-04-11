@@ -1,7 +1,6 @@
 #ifndef _OS_NATIVE_DIALOGS_H
 #define _OS_NATIVE_DIALOGS_H
 #include <string>
-#include <memory>
 
 namespace os
 {
@@ -23,7 +22,7 @@ namespace os
    class NativeDialogs
    {
    public:
-      std::unique_ptr<ToolTipDialog> createToolTip();
+      ToolTipDialog* createToolTip();
    };
 } // namespace os
 

@@ -27,9 +27,26 @@ namespace os
       delete m_nativeDialogs;
    }
 
-   std::unique_ptr<Window> System::createWindow(int width, int height)
+   Window* System::createWindow(int width, int height)
    {
-      return std::unique_ptr<Window>(new WinWindow(width, height));
+      Window* win(new WinWindow(width, height));
+      if(!m_defaultWindow)
+         m_defaultWindow = win;
+
+      return win;
+   }
+
+   Surface* createSurface(int width, int height)
+   {
+      SkiaSurface* surface = new SkiaSurface;
+      surface->create(width, height);
+
+      return surface;
+   }
+
+   Surface* loadSurface(const char* filename)
+   {
+      return SkiaSurface::MakeFromFilename(filename);
    }
 
    EventQueue* System::eventQueue()
@@ -49,7 +66,7 @@ namespace os
 
    System* System::GetInstance()
    {
-      //TODO: Verificar si esto no causa daño
+      //TODO: Verificar si esto no causa algun tipo de daño
       static System instance;
 
       return &instance;

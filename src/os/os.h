@@ -5,7 +5,6 @@
 #include "window.h"
 #include "event_queue.h"
 #include "native_dialogs.h"
-
-#include "utils/slot.h"
+#include "surface.h"
 
 #endif

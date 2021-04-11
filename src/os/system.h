@@ -2,13 +2,12 @@
 #define _OS_SYSTEM_H
 #include "keys.h"
 
-#include <memory>
-
 namespace os
 {
    class Window;
    class EventQueue;
    class NativeDialogs;
+   class Surface;
 
    class System
    {
@@ -17,7 +16,10 @@ namespace os
 
       bool isKeyPressed(KeyCode keycode);
 
-      std::unique_ptr<Window> createWindow(int width, int height);
+      Window* defaultWindow();
+      Window* createWindow(int width, int height);
+      Surface* createSurface(int width, int height);
+      Surface* loadSurface(const char* filename);
 
       EventQueue* eventQueue();
       NativeDialogs* nativeDialogs();
@@ -27,6 +29,7 @@ namespace os
       System();
 
       NativeDialogs* m_nativeDialogs;
+      Window* m_defaultWindow;
    };
 } // namespace os
 

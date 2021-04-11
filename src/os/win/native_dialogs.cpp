@@ -81,8 +81,8 @@ namespace os
       std::string m_text;
    };
 
-   std::unique_ptr<ToolTipDialog> NativeDialogs::createToolTip()
+   ToolTipDialog* NativeDialogs::createToolTip()
    {
-      return std::unique_ptr<ToolTipDialog>(new Win32ToolTipDialog());
+      return new Win32ToolTipDialog();
    }
 } // namespace os
