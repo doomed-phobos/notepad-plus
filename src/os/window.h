@@ -18,6 +18,7 @@ namespace os
       virtual void setVisible(bool visible) = 0;
       virtual void setMouseCursor(MouseCursor cursor) = 0;
 
+      virtual void invalidate() = 0;
       virtual void captureMouse() = 0;
       virtual void releaseMouse() = 0;
 

@@ -19,6 +19,7 @@ namespace os
       virtual void setVisible(bool visible) override;
       virtual void setMouseCursor(MouseCursor cursor) override;
 
+      virtual void invalidate() override;
       virtual void captureMouse() override;
       virtual void releaseMouse() override;
 
