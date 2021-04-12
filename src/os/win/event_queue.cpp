@@ -1,33 +1,31 @@
 #include "os/event_queue.h"
 
+#include <iostream>
 #include <windows.h>
 
 namespace os
 {
-   void EventQueue::getEvents(Event& ev, bool wait)
+   void processEvent()
    {
       MSG msg;
-      BOOL res;
 
-      while(m_events.empty()) {
-         if(ev.type != Event::None_Type)
-            wait = false;
+      while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+         TranslateMessage(&msg);
+         DispatchMessage(&msg);
+      } 
+   }
 
-         if(wait)
-            res = ::GetMessage(&msg, nullptr, 0, 0);
-         else
-            res = ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
-
-
-         if(res) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-         }else if(!wait)
-            break;
-      }
-
+   void EventQueue::getEvents(Event& ev, bool wait)
+   {
       if(m_events.empty()) {
-         ev.type = Event::None_Type;
+         processEvent();
+
+         if(wait) {
+            while(m_events.empty()) {
+               Sleep(10);
+               processEvent();
+            }
+         }
       }else {
          ev = m_events.front();
          m_events.pop();
