@@ -80,7 +80,7 @@ namespace os
    void WinWindow::setVisible(bool visible)
    {
       if(visible) {
-         ShowWindow(m_hwnd, SW_SHOWNORMAL);
+         ShowWindow(m_hwnd, SW_SHOW);
          UpdateWindow(m_hwnd);
       }else {
          ShowWindow(m_hwnd, SW_HIDE);
@@ -106,6 +106,11 @@ namespace os
       }
 
       SetCursor(m_hcursor);
+   }
+
+   void WinWindow::invalidate()
+   {
+      InvalidateRect(m_hwnd, NULL, FALSE);
    }
 
    void WinWindow::captureMouse()
@@ -347,6 +352,40 @@ namespace os
       }
          break;
       case WM_DROPFILES: {
+         HDROP hDrop = reinterpret_cast<HDROP>(wParam);
+         utils::paths files;
+
+         UINT totalFiles = DragQueryFile(hDrop, INFINITE, NULL, 0);
+         for(UINT index = 0; index < totalFiles; index++) {
+            UINT required_size = DragQueryFile(hDrop, index, NULL, 0);
+            if(required_size > 0) {
+               std::vector<wchar_t> buf(++required_size);
+               DragQueryFile(hDrop, index, &buf[0], buf.size());
+               files.push_back(utils::to_utf8(&buf[0]));
+            }
+         } 
+
+         DragFinish(hDrop);
+         Event ev;
+         ev.type = Event::DropFiles_Type;
+         ev.files = std::move(files);
+         
+         queueEvent(ev);
+         return 0;
+      }
+         break;
+      case WM_SETFOCUS: {
+         Event ev;
+         ev.type = Event::Focus_Type;
+         ev.isFocus = true;
+         queueEvent(ev);
+      }
+         break;
+      case WM_KILLFOCUS: {
+         Event ev;
+         ev.type = Event::Focus_Type;
+         ev.isFocus = false;
+         queueEvent(ev); 
       }
          break;
       }
@@ -357,7 +396,8 @@ namespace os
    void WinWindow::queueEvent(Event& ev)
    {
       ev.window = this;
-      EventQueue::GetInstance()->queueEvent(ev);
+      EventQueue* queue = EventQueue::GetInstance();
+      queue->queueEvent(ev);
    }
 
    void WinWindow::mouseEvent(Event& ev, LPARAM lParam)
