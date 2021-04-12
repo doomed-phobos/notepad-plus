@@ -8,7 +8,7 @@ namespace gfx
    {
    public:
       Paint() :
-         m_color(colors::NoneColor),
+         m_color(colors::None),
          m_antialias(false),
          m_strokeWidth(1.f),
          m_style(Fill_Style)

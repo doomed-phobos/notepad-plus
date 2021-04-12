@@ -32,11 +32,11 @@ namespace gfx
 
    namespace colors
    {
-      constexpr inline color_t NoneColor  =  color_t(0);
-      constexpr inline color_t WhiteColor =  rgba(255, 255, 255);
-      constexpr inline color_t RedColor   =  rgba(255, 0, 0);
-      constexpr inline color_t GreenColor =  rgba(0, 255, 0);
-      constexpr inline color_t BlueColor  =  rgba(0, 0, 255);
+      constexpr inline color_t None  =  color_t(0);
+      constexpr inline color_t White =  rgba(255, 255, 255);
+      constexpr inline color_t Red   =  rgba(255, 0, 0);
+      constexpr inline color_t Green =  rgba(0, 255, 0);
+      constexpr inline color_t Blue  =  rgba(0, 0, 255);
    } // namespace colors
 } // namespace gfx
 
