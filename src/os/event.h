@@ -15,6 +15,7 @@ namespace os
          Close_Type,
          Resize_Type,
          DropFiles_Type,
+         Focus_Type,
          MouseUp_Type,
          MouseDown_Type,
          MouseDoubleClick_Type,
@@ -53,6 +54,7 @@ namespace os
       KeyCode keyCode;
       bool deadKey;
       wchar_t unicodeChr;
+      bool isFocus;
    };
 } // namespace os
 
