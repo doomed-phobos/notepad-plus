@@ -1,62 +1,40 @@
 #include "os.h"
 
 #include <iostream>
-//TODO: Crear fuentes y surface::drawText
 
-static bool isFocus = false;
-
-struct Theme
-{
-   gfx::color_t background = gfx::colors::None;
-   gfx::color_t menu       = gfx::colors::None;
-   gfx::color_t page       = gfx::colors::None;
-
-   static Theme Focus() {
-      Theme theme;
-      theme.background = gfx::colors::Red;
-      theme.menu = gfx::rgba(240, 240, 240);
-      //theme.page = gfx::rgba(255, 255, 255);
-
-      return theme;
-   }
-
-   static Theme NoFocus() {
-      Theme theme;
-      theme.background = gfx::colors::Blue;
-      theme.menu = gfx::rgba(240, 240, 240);
-      //theme.page = gfx::rgba(255, 255, 255);
-
-      return theme;
-   }
-};
+os::System* sys = os::System::GetInstance();
 
 void paint(os::Surface* surface)
 {
-   Theme theme;
-   if(isFocus)
-      theme = Theme::Focus();
-   else
-      theme = Theme::NoFocus();
+   surface->clear(gfx::rgba(86, 157, 229));
 
-   surface->clear(theme.background);
-
-   surface->drawRect(gfx::RectF(gfx::PointF(0, 0), gfx::PointT(surface->width(), 20)),
-      gfx::Paint(theme.menu));
+   surface->drawRect(gfx::RectI(gfx::PointI(0, 0), gfx::PointI(surface->width(), 20)),
+      gfx::Paint(gfx::rgba(245, 246, 247)));
    
-   surface->drawRect(gfx::RectF(gfx::PointF(1, 21), gfx::PointF(surface->width()-1, surface->height()-1)),
-      gfx::Paint(theme.page));
+   surface->drawRect(gfx::RectI(gfx::PointI(1, 21), gfx::PointI(surface->width()-1, surface->height()-1)),
+      gfx::Paint(gfx::rgba(255, 255, 255)));
+   
+   surface->drawRect(gfx::RectI(gfx::PointI(surface->width()-16, 21), gfx::PointI(surface->width()-1, surface->height()-1)),
+      gfx::Paint(gfx::rgba(240, 240, 240)));
+
+   os::Font font(sys->fontManager()->makeDefault(), 24);
+   
+   gfx::Paint p;
+   p.setColor(gfx::rgba(0, 0, 0));
+   p.setAntialias(true);
+   p.setStyle(gfx::Paint::Stroke_Style);
+   surface->drawText("AAAAA", gfx::PointI(10, 50), p, font);
 }
 
 int main()
 {
-   os::System* sys(os::System::GetInstance());
-   std::unique_ptr<os::Window> win(sys->createWindow(800, 400));
-   win->OnPaint.connect(paint);
+   os::WindowHandle win(sys->createWindow(800, 400));
 
+   win->OnPaint.connect(paint);
    win->setTitle("notepad+");
    win->setMouseCursor(os::Arrow_MouseCursor);
    win->setVisible(true);
-
+   
    os::EventQueue* queue = sys->eventQueue();
 
    bool is_run = true;
@@ -67,10 +45,6 @@ int main()
       switch(ev.type) {
       case os::Event::Close_Type:
          is_run = false;
-         break;
-      case os::Event::Focus_Type:
-         isFocus = ev.isFocus;
-         win->invalidate();
          break;
       }
    }
