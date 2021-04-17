@@ -6,5 +6,7 @@
 #include "event_queue.h"
 #include "native_dialogs.h"
 #include "surface.h"
+#include "font_manager.h"
+#include "font.h"
 
 #endif
