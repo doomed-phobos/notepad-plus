@@ -2,10 +2,18 @@
 #define _OS_WIN_WINDOW_H
 #include "os/window.h"
 #include "os/event_queue.h"
-#include "os/skia/skia_surface.h"
+#include "os/surface.h"
 
 #include <memory>
 #include <windows.h>
+
+#ifdef max
+   #undef max
+#endif
+
+#ifdef min
+   #undef min
+#endif
 
 namespace os
 {
@@ -23,6 +31,7 @@ namespace os
       virtual void captureMouse() override;
       virtual void releaseMouse() override;
 
+      virtual Surface* surface() override;
       virtual NativeHandle handle() override;
    private:
       class WindowClass;
@@ -35,7 +44,7 @@ namespace os
       HWND m_hwnd;
       HCURSOR m_hcursor;
       bool m_mouseHover;
-      std::unique_ptr<SkiaSurface> m_surface;
+      std::unique_ptr<Surface> m_surface;
    };
 } // namespace os
 

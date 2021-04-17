@@ -2,6 +2,7 @@
 #define _OS_WINDOW_H
 #include "utils/signal.h"
 #include "mouse_cursor.h"
+#include "scoped_handle.h"
 
 #include <string>
 
@@ -22,10 +23,13 @@ namespace os
       virtual void captureMouse() = 0;
       virtual void releaseMouse() = 0;
 
+      virtual Surface* surface() = 0;
       virtual NativeHandle handle() = 0;
 
       utils::Signal<void, Surface*> OnPaint;
    };
+
+   typedef ScopedHandle<Window> WindowHandle;
 } // namespace os
 
 #endif

@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include "os/skia/skia_surface.h"
 #include "utils/string.h"
 #include "keys.h"
 
@@ -123,6 +124,11 @@ namespace os
    {
       if(GetCapture() == m_hwnd)
          ReleaseCapture();
+   }
+
+   Surface* WinWindow::surface()
+   {
+      return m_surface.get();
    }
 
    Window::NativeHandle WinWindow::handle()
@@ -270,7 +276,7 @@ namespace os
          
          OnPaint(m_surface.get());
 
-         const SkBitmap& bmp = m_surface->bitmap();
+         const SkBitmap& bmp = ((SkiaSurface*)m_surface.get())->bitmap();
          BITMAPINFO bmi = {0};
          bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
          bmi.bmiHeader.biBitCount = 32;
@@ -295,6 +301,7 @@ namespace os
          Event ev;
          ev.type = Event::Resize_Type;
          queueEvent(ev);
+
 
          m_surface->create(width, height);
 
@@ -374,18 +381,12 @@ namespace os
          return 0;
       }
          break;
-      case WM_SETFOCUS: {
+      case WM_ACTIVATE: {
          Event ev;
          ev.type = Event::Focus_Type;
-         ev.isFocus = true;
+         ev.isFocus = LOWORD(wParam) != WA_INACTIVE ? true : false;
+
          queueEvent(ev);
-      }
-         break;
-      case WM_KILLFOCUS: {
-         Event ev;
-         ev.type = Event::Focus_Type;
-         ev.isFocus = false;
-         queueEvent(ev); 
       }
          break;
       }
