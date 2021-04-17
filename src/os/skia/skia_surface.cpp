@@ -1,8 +1,13 @@
 #include "skia_surface.h"
 
 #include "skia_convert.h"
+#include "skia_typeface.h"
+#include "os/font.h"
+
 #include "SkCodec.h"
 #include "SkStream.h"
+#include "SkFont.h"
+#include "SkTextUtils.h"
 
 #include <stdexcept>
 
@@ -60,6 +65,28 @@ namespace os
          m_canvas->drawRect(details::to_skia_stroke(rc), m_paint);
       else
          m_canvas->drawRect(details::to_skia(rc), m_paint);
+   }
+
+   void SkiaSurface::drawText(const char* text, const gfx::PointI& position, const gfx::Paint& paint,
+                              const Font& font, TextAlign align)
+   {
+      Typeface* typeface = font.typeface();
+      sk_sp<SkTypeface> skTypeface(typeface ? reinterpret_cast<SkiaTypeface*>(typeface)->skTypeface() :
+         SkTypeface::MakeDefault());
+
+      SkFont skFont(skTypeface, font.size(), font.scaleX(), font.skewX());
+      skFont.setEdging((SkFont::Edging)font.edging());
+
+      details::to_skia(m_paint, paint);
+
+      SkTextUtils::DrawString(
+         m_canvas,
+         text,
+         position.x, position.y,
+         skFont,
+         m_paint,
+         (SkTextUtils::Align)align
+      );
    }
 
    void SkiaSurface::drawSurface(const Surface* src, int dstX, int dstY)

@@ -2,13 +2,15 @@
 #define _OS_SKIA_SKIA_CONVERT_H
 #include "gfx/paint.h"
 #include "gfx/rect.h"
+#include "os/font_style.h"
 
 #include "SkPaint.h"
 #include "SkRect.h"
+#include "SkFontStyle.h"
 
 #include <algorithm>
 
-namespace details
+namespace os::details
 {
    inline SkColor to_skia(const gfx::color_t c)
    {
@@ -39,6 +41,20 @@ namespace details
                               std::max(0.f, rc.width),
                               std::max(0.f, rc.height));
    }
-} // namespace details
+
+   inline SkFontStyle to_skia(const FontStyle& style)
+   {
+      return SkFontStyle((int)style.weight(),
+         (int)style.width(),
+         (SkFontStyle::Slant)style.slant());
+   }
+
+   inline FontStyle from_skia(const SkFontStyle& skStyle)
+   {
+      return FontStyle((FontStyle::Weight)skStyle.weight(),
+         (FontStyle::Width)skStyle.width(),
+         (FontStyle::Slant)skStyle.slant());
+   }
+} // namespace os::details
 
 #endif

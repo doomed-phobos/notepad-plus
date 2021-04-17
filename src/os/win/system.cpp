@@ -2,6 +2,8 @@
 
 #include "os/native_dialogs.h"
 #include "os/event_queue.h"
+#include "os/skia/skia_surface.h"
+#include "os/skia/skia_font_manager.h"
 #include "window.h"
 #include "keys.h"
 
@@ -10,10 +12,11 @@
 
 namespace os
 {
-   System::System()
+   System::System() :
+      m_nativeDialogs(new NativeDialogs),
+      m_fontManager(new SkiaFontManager),
+      m_defaultWindow(nullptr)
    {
-      m_nativeDialogs = new NativeDialogs;
-
       INITCOMMONCONTROLSEX icex;
       icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
       icex.dwICC = ICC_TAB_CLASSES;
@@ -24,10 +27,9 @@ namespace os
 
    System::~System()
    {
-      delete m_nativeDialogs;
    }
 
-   Window* System::createWindow(int width, int height)
+   ScopedHandle<Window> System::createWindow(int width, int height)
    {
       Window* win(new WinWindow(width, height));
       if(!m_defaultWindow)
@@ -36,7 +38,7 @@ namespace os
       return win;
    }
 
-   Surface* createSurface(int width, int height)
+   ScopedHandle<Surface> System::createSurface(int width, int height)
    {
       SkiaSurface* surface = new SkiaSurface;
       surface->create(width, height);
@@ -44,7 +46,7 @@ namespace os
       return surface;
    }
 
-   Surface* loadSurface(const char* filename)
+   ScopedHandle<Surface> System::loadSurface(const char* filename)
    {
       return SkiaSurface::MakeFromFilename(filename);
    }
@@ -56,7 +58,12 @@ namespace os
 
    NativeDialogs* System::nativeDialogs()
    {
-      return m_nativeDialogs;
+      return m_nativeDialogs.get();
+   }
+
+   FontManager* System::fontManager()
+   {
+      return m_fontManager.get();
    }
 
    bool System::isKeyPressed(KeyCode keycode)
@@ -68,7 +75,7 @@ namespace os
    {
       //TODO: Verificar si esto no causa algun tipo de daño
       static System instance;
-
+      
       return &instance;
    }
 } // namespace os
