@@ -37,6 +37,10 @@ namespace gfx
          height = rightBottom.y - leftTop.y;
       }
 
+      template<typename U>
+      explicit RectT(const RectT<U>& rc) : x(static_cast<T>(rc.x)), y(static_cast<T>(rc.y)),
+                                           width(static_cast<T>(rc.width)), height(static_cast<T>(rc.height)) {}
+
       bool isEmpty() const {
          return width < 0 || height < 0;
       }
