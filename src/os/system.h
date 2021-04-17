@@ -1,6 +1,7 @@
 #ifndef _OS_SYSTEM_H
 #define _OS_SYSTEM_H
 #include "keys.h"
+#include "scoped_handle.h"
 
 namespace os
 {
@@ -8,6 +9,7 @@ namespace os
    class EventQueue;
    class NativeDialogs;
    class Surface;
+   class FontManager;
 
    class System
    {
@@ -17,18 +19,20 @@ namespace os
       bool isKeyPressed(KeyCode keycode);
 
       Window* defaultWindow();
-      Window* createWindow(int width, int height);
-      Surface* createSurface(int width, int height);
-      Surface* loadSurface(const char* filename);
+      ScopedHandle<Window> createWindow(int width, int height);
+      ScopedHandle<Surface> createSurface(int width, int height);
+      ScopedHandle<Surface> loadSurface(const char* filename);
 
       EventQueue* eventQueue();
+      FontManager* fontManager();
       NativeDialogs* nativeDialogs();
 
       static System* GetInstance();
    private:
       System();
 
-      NativeDialogs* m_nativeDialogs;
+      ScopedHandle<NativeDialogs> m_nativeDialogs;
+      ScopedHandle<FontManager> m_fontManager;
       Window* m_defaultWindow;
    };
 } // namespace os
