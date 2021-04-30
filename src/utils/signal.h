@@ -17,11 +17,6 @@ namespace utils
       ~Signal_base() {
          disconnectAll();
       }
-      
-      slot_t* addSlot(slot_t* slot) {
-         m_slots.push_back(slot);
-         return slot;
-      }
 
       slot_t* connect(R(*function)(Args...)) {
          return addSlot(new Slot_fun<R, Args...>(function));
@@ -39,7 +34,11 @@ namespace utils
 
          m_slots.clear();
       }
-
+   private:
+      slot_t* addSlot(slot_t* slot) {
+         m_slots.push_back(slot);
+         return slot;
+      }
    protected:
       list_t m_slots;
    };
