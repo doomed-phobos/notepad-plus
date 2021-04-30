@@ -1,5 +1,6 @@
 #ifndef _OS_SCOPED_HANDLE_H
 #define _OS_SCOPED_HANDLE_H
+#include <atomic>
 #include <utility>
 
 namespace os
@@ -8,19 +9,19 @@ namespace os
    class ScopedHandle
    {
    public:
-      ScopedHandle() : m_ptr(nullptr), m_refCount(nullptr) {}
+      ScopedHandle() : m_ptr(nullptr), m_refCounter(nullptr) {}
       ScopedHandle(T* ptr) : m_ptr(ptr),
-                             m_refCount(new RefCounter) {}
+                             m_refCounter(new RefCounter) {}
       
       ScopedHandle(const ScopedHandle& that) {
          m_ptr = that.m_ptr;
-         m_refCount = that.m_refCount;
+         m_refCounter = that.m_refCounter;
          ref();
       }
 
       ScopedHandle(ScopedHandle&& that) {
          m_ptr = that.release();
-         m_refCount = std::exchange(that.m_refCount, nullptr);
+         m_refCounter = std::exchange(that.m_refCounter, nullptr);
       }
 
       ~ScopedHandle() {unref();}
@@ -36,11 +37,11 @@ namespace os
 
       void swap(ScopedHandle& that) {
          std::swap(m_ptr, that.m_ptr);
-         std::swap(m_refCount, that.m_refCount);
+         std::swap(m_refCounter, that.m_refCounter);
       }
 
       int use_count() const {
-         return m_refCount ? m_refCount->get() : 0;
+         return m_refCounter ? m_refCounter->get() : 0;
       }
       
       T* get() const {return m_ptr;}
@@ -66,36 +67,36 @@ namespace os
          RefCounter() : m_refCount(1) {}
 
          int add() const {
-            return m_refCount++;//m_refCount.fetch_add(1, std::memory_order_relaxed);
+            return m_refCount.fetch_add(1, std::memory_order_relaxed);
          }
 
          int sub() const {
-            return m_refCount--;//m_refCount.fetch_add(-1, std::memory_order_relaxed);
+            return m_refCount.fetch_add(-1, std::memory_order_relaxed);
          }
 
          int get() const {
-            return m_refCount;//m_refCount.load(std::memory_order_acquire);
+            return m_refCount.load(std::memory_order_acquire);
          }
       private:
-         mutable int m_refCount;
+         mutable std::atomic_int32_t m_refCount;
       };
 
       void ref() {
-         if(m_refCount)
-            m_refCount->add();
+         if(m_refCounter)
+            m_refCounter->add();
       }
 
       void unref() {
-         if(m_refCount && m_refCount->sub() == 1) {
+         if(m_refCounter && m_refCounter->sub() == 1) {
             delete m_ptr;
-            delete m_refCount;
+            delete m_refCounter;
 
             m_ptr = nullptr;
-            m_refCount = nullptr;
+            m_refCounter = nullptr;
          }
       }
 
-      RefCounter* m_refCount;
+      RefCounter* m_refCounter;
       T* m_ptr;
    };
 } // namespace os
