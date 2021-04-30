@@ -2,8 +2,6 @@
 #define _OS_TYPEFACE_H
 #include "scoped_handle.h"
 
-#include <string>
-
 namespace os
 {
    class FontStyle;
@@ -14,7 +12,7 @@ namespace os
       virtual ~Typeface() {}
 
       virtual FontStyle fontStyle() const = 0;
-      virtual std::string getFamilyName() const = 0;
+      virtual const char* getFamilyName() const = 0;
    };
 
    typedef ScopedHandle<Typeface> TypefaceHandle;

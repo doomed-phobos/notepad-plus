@@ -18,8 +18,8 @@ namespace os
       virtual std::string getFamilyName(int index) const override;
 
       virtual TypefaceHandle makeDefault() override;
-      virtual TypefaceHandle makeFromFamilyName(const char* family, FontStyle fontStyle) override;
-      virtual TypefaceHandle makeFromFilename(const char* filename) override;
+      virtual TypefaceHandle makeFromFamilyName(const char family[], FontStyle fontStyle) override;
+      virtual TypefaceHandle makeFromFilename(const char filename[]) override;
    private:
       sk_sp<SkFontMgr> m_manager;
    };
