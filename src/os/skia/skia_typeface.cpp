@@ -11,7 +11,7 @@ namespace os
       return details::from_skia(m_skTypeface->fontStyle());
    }
 
-   std::string SkiaTypeface::getFamilyName() const
+   const char* SkiaTypeface::getFamilyName() const
    {
       SkString skFamilyName;
       m_skTypeface->getFamilyName(&skFamilyName);

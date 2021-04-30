@@ -12,17 +12,17 @@ namespace os
    {
    public:
       virtual FontStyle fontStyle() const override;
-      virtual std::string getFamilyName() const override;
+      virtual const char* getFamilyName() const override;
 
       static SkiaTypeface* MakeFromDefault() {
          return new SkiaTypeface(SkTypeface::MakeDefault());
       }
 
-      static SkiaTypeface* MakeFromFamilyName(const char* family, FontStyle style) {
+      static SkiaTypeface* MakeFromFamilyName(const char family[], FontStyle style) {
          return new SkiaTypeface(SkTypeface::MakeFromName(family, details::to_skia(style)));
       }
 
-      static SkiaTypeface* MakeFromFilename(const char* filename) {
+      static SkiaTypeface* MakeFromFilename(const char filename[]) {
          return new SkiaTypeface(SkTypeface::MakeFromFile(filename));
       }
 
