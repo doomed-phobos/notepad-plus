@@ -20,10 +20,10 @@ namespace os
    class WinWindow : public Window
    {
    public:
-      WinWindow(int width, int height);
+      WinWindow(int width, int height, const Style& style);
       ~WinWindow();
 
-      virtual void setTitle(const std::string& title) override;
+      virtual void setTitle(const char title[]) override;
       virtual void setVisible(bool visible) override;
       virtual void setMouseCursor(MouseCursor cursor) override;
 
@@ -33,6 +33,7 @@ namespace os
 
       virtual Surface* surface() override;
       virtual NativeHandle handle() override;
+      virtual gfx::SizeI clientSize() const override;
    private:
       class WindowClass;
 
@@ -41,6 +42,7 @@ namespace os
       static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
       LRESULT wndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
+      gfx::SizeI m_clientSize;
       HWND m_hwnd;
       HCURSOR m_hcursor;
       bool m_mouseHover;

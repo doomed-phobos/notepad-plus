@@ -40,10 +40,11 @@ namespace os
       static constexpr const wchar_t* str_WndClass = L"Window";
    };
 
-   WinWindow::WinWindow(int width, int height) :
+   WinWindow::WinWindow(int width, int height, const Style& style) :
       m_hwnd(nullptr),
       m_hcursor(nullptr),
       m_mouseHover(false),
+      m_clientSize(width, height),
       m_surface(new SkiaSurface)
    {
       WindowClass::Register();
@@ -52,7 +53,7 @@ namespace os
          WS_EX_APPWINDOW | WS_EX_ACCEPTFILES,
          WindowClass::str_WndClass,
          L"",
-         WS_OVERLAPPEDWINDOW,
+         style.value(),
          CW_USEDEFAULT, CW_USEDEFAULT,
          width, height,
          nullptr,
@@ -73,9 +74,9 @@ namespace os
          DestroyWindow(m_hwnd);
    }
 
-   void WinWindow::setTitle(const std::string& str)
+   void WinWindow::setTitle(const char title[])
    {
-      SetWindowText(m_hwnd, utils::from_utf8(str).c_str());
+      SetWindowText(m_hwnd, utils::from_utf8(title).c_str());
    }
 
    void WinWindow::setVisible(bool visible)
@@ -91,7 +92,7 @@ namespace os
    void WinWindow::setMouseCursor(MouseCursor cursor)
    {
       switch(cursor) {
-      case No_MouseCursor:         /*No hacer nada*/ break;
+      case No_MouseCursor:         m_hcursor = nullptr;							break;
       case Arrow_MouseCursor:      m_hcursor = LoadCursor(NULL, IDC_ARROW);     break;
       case IBeam_MouseCursor:      m_hcursor = LoadCursor(NULL, IDC_IBEAM);     break;
       case Wait_MouseCursor:       m_hcursor = LoadCursor(NULL, IDC_WAIT);      break;
@@ -136,6 +137,11 @@ namespace os
       return reinterpret_cast<NativeHandle>(m_hwnd);
    }
 
+   gfx::SizeI WinWindow::clientSize() const
+   {
+      return m_clientSize;
+   }
+
    LRESULT CALLBACK WinWindow::GlobalWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
    {
       WinWindow* win = nullptr;
@@ -146,6 +152,9 @@ namespace os
             win->m_hwnd = hWnd;
       }else {
          win = reinterpret_cast<WinWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
+         if(win && win->m_hwnd != hWnd)
+            win = nullptr;
       }
 
       if(win) {
@@ -295,15 +304,13 @@ namespace os
       }
          break;
       case WM_SIZE: {
-         int width = LOWORD(lParam);
-         int height = HIWORD(lParam);
+         m_clientSize = gfx::SizeI(LOWORD(lParam), HIWORD(lParam));
 
          Event ev;
          ev.type = Event::Resize_Type;
          queueEvent(ev);
 
-
-         m_surface->create(width, height);
+         m_surface->create(m_clientSize.width, m_clientSize.height);
 
          InvalidateRect(m_hwnd, NULL, FALSE);
 
