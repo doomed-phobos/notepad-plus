@@ -16,72 +16,84 @@ namespace os
    class Win32ToolTipDialog : public ToolTipDialog
    {
    public:
-      Win32ToolTipDialog() : m_hToolTip(nullptr) ,
-                             m_shown(false) {}
-      ~Win32ToolTipDialog() {this->close();}
+      Win32ToolTipDialog() :
+         m_hToolTip(nullptr),
+         m_shown(false) ,
+         m_info{0} {}
 
-      virtual bool show(Window* parent) override {
-         if(!m_hToolTip) {
-            HWND hParent = reinterpret_cast<HWND>(parent->handle());
-            HINSTANCE hInst = GetModuleHandle(nullptr);
-
-            m_hToolTip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
-                                          WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
-                                          CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
-                                          hParent, NULL, hInst, NULL);
-
-            SetWindowPos(m_hToolTip, HWND_TOPMOST, 0, 0, 0, 0, 
-                  SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-
-            std::wstring text = utils::from_utf8(m_text);
-            TOOLINFO ti = {0};
-            ti.cbSize = sizeof(TOOLINFO);
-            ti.uFlags = TTF_SUBCLASS;
-            ti.hwnd = hParent;
-            ti.hinst = hInst;
-            ti.lpszText = &text[0];
-            
-            GetClientRect (hParent, &ti.rect);
-
-            if(!SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM)&ti))
-               return false;
-
-            if(!SendMessage(m_hToolTip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&ti))
-               return false;
-            
-            m_shown = true;
-
-            return true;
-         }
-
-         if(m_shown)
-            return true;
-
-         return false;
+      ~Win32ToolTipDialog() {
+         this->destroy();
       }
 
-      virtual void close() override {
-         if(m_hToolTip) {
-            DestroyWindow(m_hToolTip);
-            m_hToolTip = nullptr;
+      virtual void show(Window* parent) override {
+         if(!m_shown) {
+            m_shown = true;
+
+            this->create(parent);
+
+            SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM)&m_info);
+            SendMessage(m_hToolTip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_info);
+         }
+      }
+
+      virtual void hide() override {
+         if(m_shown) {
             m_shown = false;
+
+            this->destroy();
          }
       }
 
       virtual bool isVisible() override {
-         return m_hToolTip != nullptr;
+         return m_shown;
       }
 
-      virtual void setText(const std::string& text) override {
-         m_text = text;
+      virtual void setText(const char text[]) override {
+         m_text = utils::from_utf8(text);
+         m_info.lpszText = &m_text[0];
       }
    private:
+      void create(Window* parent) {
+         if(!m_hToolTip) {
+            HWND hParent = reinterpret_cast<HWND>(parent->handle());
+         
+            m_hToolTip = CreateWindowEx(WS_EX_TOPMOST,
+               TOOLTIPS_CLASS,
+               NULL,
+               WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+               CW_USEDEFAULT, CW_USEDEFAULT,
+               CW_USEDEFAULT, CW_USEDEFAULT,
+               hParent,
+               NULL,
+               NULL,
+               NULL);
+
+            SetWindowPos(m_hToolTip, HWND_TOPMOST, 0, 0, 0, 0,
+               SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+            m_info.cbSize = sizeof(TOOLINFO);
+            m_info.uFlags = TTF_SUBCLASS;
+            m_info.hwnd = hParent;
+            m_info.lpszText = &m_text[0];
+
+            GetClientRect(hParent, &m_info.rect);
+         }
+      }
+
+      void destroy() {
+         if(m_hToolTip) {
+            DestroyWindow(m_hToolTip);
+            m_hToolTip = nullptr;
+         }
+      }
+
       HWND m_hToolTip;
+      TOOLINFO m_info;
       bool m_shown;
-      std::string m_text;
+      std::wstring m_text;
    };
 
-   ToolTipDialog* NativeDialogs::createToolTip()
+   ToolTipDialogHandle NativeDialogs::createToolTip()
    {
       return new Win32ToolTipDialog();
    }

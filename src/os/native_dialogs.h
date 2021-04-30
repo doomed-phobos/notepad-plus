@@ -1,6 +1,6 @@
 #ifndef _OS_NATIVE_DIALOGS_H
 #define _OS_NATIVE_DIALOGS_H
-#include <string>
+#include "scoped_handle.h"
 
 namespace os
 {
@@ -11,18 +11,20 @@ namespace os
    public:
       virtual ~ToolTipDialog() {}
 
-      virtual bool show(Window* parent) = 0;
-      virtual void close() = 0;
+      virtual void show(Window* parent) = 0;
+      virtual void hide() = 0;
       
       virtual bool isVisible() = 0;
 
-      virtual void setText(const std::string& text) = 0;
+      virtual void setText(const char text[]) = 0;
    };
+
+   typedef ScopedHandle<ToolTipDialog> ToolTipDialogHandle;
 
    class NativeDialogs
    {
    public:
-      ToolTipDialog* createToolTip();
+      ToolTipDialogHandle createToolTip();
    };
 } // namespace os
 
