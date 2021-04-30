@@ -1,10 +1,14 @@
 #ifndef _GFX_RECT_H
 #define _GFX_RECT_H
-template<typename T>
-class PointT;
 
 namespace gfx
 {
+   template<typename T>
+   class PointT;
+
+   template<typename T>
+   class SizeT;
+   
    template<typename T>
    class RectT
    {
@@ -16,6 +20,8 @@ namespace gfx
                 width(0), height(0) {}
       RectT(const T& x, const T& y, const T& width, const T& height) : x(x), y(y),
                                                                        width(width), height(height) {}
+      RectT(const PointT<T>& pt, const SizeT<T>& sz) : x(pt.x), y(pt.y),
+                                                       width(sz.width), height(sz.height) {}
       RectT(PointT<T> leftTop, PointT<T> rightBottom) {
          T temp;
          
@@ -43,6 +49,29 @@ namespace gfx
 
       bool isEmpty() const {
          return width < 0 || height < 0;
+      }
+
+      bool contains(const PointT<T>& pt) const {
+         return pt.x >= x && pt.x < x+width &&
+                pt.y >= y && pt.y < y+height;
+      }
+
+      RectT& setOrigin(const PointT<T>& pt) {
+         x = pt.x;
+         y = pt.y;
+         return *this;
+      }
+
+      RectT& offset(const T& dx, const T& dy) {
+         x += dx;
+         y += dy;
+         return *this;
+      }
+
+      RectT& offset(const PointT<T>& delta) {
+         x += delta.x;
+         y += delta.y;
+         return *this;
       }
    };
 
