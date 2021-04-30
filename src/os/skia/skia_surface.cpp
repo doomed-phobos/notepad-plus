@@ -17,6 +17,11 @@ namespace os
       m_canvas(nullptr)
    {}
 
+   SkiaSurface::~SkiaSurface()
+   {
+      delete m_canvas;
+   }
+
    void SkiaSurface::create(int width, int height)
    {
       if(!m_bitmap.tryAllocPixels(SkImageInfo::MakeN32(width, height, kOpaque_SkAlphaType)))
@@ -39,6 +44,12 @@ namespace os
    void SkiaSurface::clear(gfx::color_t c)
    {
       m_canvas->clear(details::to_skia(c));
+   }
+
+   void SkiaSurface::putPixel(gfx::color_t c, int x, int y)
+   {
+      m_paint.setColor(details::to_skia(c));
+      m_canvas->drawPoint(SkIntToScalar(x), SkIntToScalar(y), m_paint);
    }
 
    void SkiaSurface::drawCircle(const float cx, const float cy, const float radius,
@@ -67,7 +78,7 @@ namespace os
          m_canvas->drawRect(details::to_skia(rc), m_paint);
    }
 
-   void SkiaSurface::drawText(const char* text, const gfx::PointI& position, const gfx::Paint& paint,
+   void SkiaSurface::drawText(const char text[], const gfx::PointF& position, const gfx::Paint& paint,
                               const Font& font, TextAlign align)
    {
       Typeface* typeface = font.typeface();

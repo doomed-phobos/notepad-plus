@@ -11,20 +11,19 @@ namespace os
    {
    public:
       SkiaSurface();
+      ~SkiaSurface();
 
       virtual void clear(gfx::color_t c) override;
       virtual void create(int width, int height) override;
-      
-      void draw() {
 
-      }
+      virtual void putPixel(gfx::color_t c, int x, int y) override;
 
       virtual void drawLine(const float x0, const float y0,
                             const float x1, const float y1, const gfx::Paint& paint) override;
       void drawCircle(const float cx, const float cy, const float radius,
                               const gfx::Paint& paint) override;
       virtual void drawRect(const gfx::RectF& rc, const gfx::Paint& paint) override;
-      virtual void drawText(const char* text, const gfx::PointI& position, const gfx::Paint& paint,
+      virtual void drawText(const char text[], const gfx::PointF& position, const gfx::Paint& paint,
                             const Font& font, TextAlign align = Left_TextAlign) override;
       virtual void drawSurface(const Surface* src, int dstX, int dstY) override;
 

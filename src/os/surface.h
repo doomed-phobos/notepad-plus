@@ -23,7 +23,8 @@ namespace os
 
       virtual void clear(gfx::color_t c) = 0;
       virtual void create(int width, int height) = 0;
-      virtual void draw() {}
+
+      virtual void putPixel(gfx::color_t c, int x, int y) = 0;
 
       virtual void drawLine(const float x0, const float y0,
                             const float x1, const float y1, const gfx::Paint& paint) = 0;
@@ -48,7 +49,7 @@ namespace os
       virtual void drawRect(const gfx::RectI& rc, const gfx::Paint& paint) {
          drawRect(static_cast<gfx::RectF>(rc), paint);
       }
-      virtual void drawText(const char* text, const gfx::PointI& position, const gfx::Paint& paint,
+      virtual void drawText(const char text[], const gfx::PointF& position, const gfx::Paint& paint,
                             const Font& font, TextAlign align = Left_TextAlign) = 0;
       virtual void drawSurface(const Surface* src, int dstX, int dstY) = 0;
    
