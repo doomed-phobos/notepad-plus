@@ -2,10 +2,10 @@
 #define _OS_SYSTEM_H
 #include "keys.h"
 #include "scoped_handle.h"
+#include "window.h"
 
 namespace os
 {
-   class Window;
    class EventQueue;
    class NativeDialogs;
    class Surface;
@@ -19,9 +19,9 @@ namespace os
       bool isKeyPressed(KeyCode keycode);
 
       Window* defaultWindow();
-      ScopedHandle<Window> createWindow(int width, int height);
+      WindowHandle createWindow(int width, int height, const Style& style = Window::Styles::Default);
       ScopedHandle<Surface> createSurface(int width, int height);
-      ScopedHandle<Surface> loadSurface(const char* filename);
+      ScopedHandle<Surface> loadSurface(const char filename[]);
 
       EventQueue* eventQueue();
       FontManager* fontManager();

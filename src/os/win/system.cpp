@@ -29,9 +29,14 @@ namespace os
    {
    }
 
-   ScopedHandle<Window> System::createWindow(int width, int height)
+   Window* System::defaultWindow()
    {
-      Window* win(new WinWindow(width, height));
+      return m_defaultWindow;
+   }
+
+   WindowHandle System::createWindow(int width, int height, const Style& style)
+   {
+      Window* win(new WinWindow(width, height, style));
       if(!m_defaultWindow)
          m_defaultWindow = win;
 
@@ -46,7 +51,7 @@ namespace os
       return surface;
    }
 
-   ScopedHandle<Surface> System::loadSurface(const char* filename)
+   ScopedHandle<Surface> System::loadSurface(const char filename[])
    {
       return SkiaSurface::MakeFromFilename(filename);
    }
